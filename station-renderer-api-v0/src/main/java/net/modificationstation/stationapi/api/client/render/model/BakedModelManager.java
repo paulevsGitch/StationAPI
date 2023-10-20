@@ -30,6 +30,7 @@ import net.modificationstation.stationapi.api.resource.ResourceReloader;
 import net.modificationstation.stationapi.api.util.JsonHelper;
 import net.modificationstation.stationapi.api.util.Util;
 import net.modificationstation.stationapi.api.util.profiler.Profiler;
+import net.modificationstation.stationapi.impl.client.texture.BufferedTextures;
 
 import java.io.BufferedReader;
 import java.io.Reader;
@@ -150,6 +151,8 @@ public class BakedModelManager implements IdentifiableResourceReloadListener, Au
         profiler.swap("baking");
         HashMultimap<Identifier, SpriteIdentifier> multimap = HashMultimap.create();
         modelLoader.bake((id, spriteId) -> {
+            //Sprite sprite = BufferedTextures.getSprite(spriteId.texture);
+            //if (sprite != null) return sprite;
             SpriteAtlasManager.AtlasPreparation atlasPreparation = preparations.get(spriteId.atlas);
             Sprite sprite = atlasPreparation.getSprite(spriteId.texture);
             if (sprite != null) return sprite;

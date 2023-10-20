@@ -10,6 +10,7 @@ import net.modificationstation.stationapi.api.util.exception.CrashException;
 import net.modificationstation.stationapi.api.util.exception.CrashReport;
 import net.modificationstation.stationapi.api.util.exception.CrashReportSection;
 import net.modificationstation.stationapi.api.util.math.MathHelper;
+import net.modificationstation.stationapi.impl.client.texture.BufferedTextures;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -70,18 +71,25 @@ public class SpriteLoader {
     public static SpriteContents load(Identifier id, Resource resource) {
         NativeImage nativeImage;
         AnimationResourceMetadata animationResourceMetadata;
+        
         try {
             animationResourceMetadata = resource.getMetadata().decode(AnimationResourceMetadata.READER).orElse(AnimationResourceMetadata.EMPTY);
         } catch (Exception exception) {
             LOGGER.error("Unable to parse metadata from {}", id, exception);
             return null;
         }
-        try (InputStream inputStream = resource.getInputStream()){
-            nativeImage = NativeImage.read(inputStream);
-        } catch (IOException iOException) {
-            LOGGER.error("Using missing texture, unable to load {}", id, iOException);
-            return null;
+    
+        nativeImage = BufferedTextures.getTexture(id);
+        if (nativeImage == null) {
+            try (InputStream inputStream = resource.getInputStream()) {
+                nativeImage = NativeImage.read(inputStream);
+            }
+            catch (IOException iOException) {
+                LOGGER.error("Using missing texture, unable to load {}", id, iOException);
+                return null;
+            }
         }
+        
         SpriteDimensions spriteDimensions = animationResourceMetadata.getSize(nativeImage.getWidth(), nativeImage.getHeight());
         if (MathHelper.isMultipleOf(nativeImage.getWidth(), spriteDimensions.width()) && MathHelper.isMultipleOf(nativeImage.getHeight(), spriteDimensions.height())) {
             return new SpriteContents(id, spriteDimensions, nativeImage, animationResourceMetadata);

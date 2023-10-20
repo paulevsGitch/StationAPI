@@ -3,6 +3,7 @@ package net.modificationstation.stationapi.api.client.texture.atlas;
 import net.modificationstation.stationapi.api.client.texture.NativeImage;
 import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.resource.Resource;
+import net.modificationstation.stationapi.impl.client.texture.BufferedTextures;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,12 +25,16 @@ public class Sprite {
     public NativeImage read() throws IOException {
         NativeImage nativeImage = this.image.get();
         if (nativeImage == null) synchronized (this) {
-            nativeImage = this.image.get();
-            if (nativeImage == null) try (InputStream inputStream = this.resource.getInputStream()) {
-                nativeImage = NativeImage.read(inputStream);
-                this.image.set(nativeImage);
-            } catch (IOException iOException) {
-                throw new IOException("Failed to load image " + this.id, iOException);
+            nativeImage = BufferedTextures.getTexture(id);
+            if (nativeImage == null) {
+                nativeImage = this.image.get();
+                if (nativeImage == null) try (InputStream inputStream = this.resource.getInputStream()) {
+                    nativeImage = NativeImage.read(inputStream);
+                    this.image.set(nativeImage);
+                }
+                catch (IOException iOException) {
+                    throw new IOException("Failed to load image " + this.id, iOException);
+                }
             }
         }
         return nativeImage;

@@ -5,7 +5,9 @@ import net.modificationstation.stationapi.api.client.texture.SpritesheetHelper;
 import net.modificationstation.stationapi.api.client.texture.binder.StationTextureBinder;
 import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.resource.ResourceHelper;
+import net.modificationstation.stationapi.impl.client.texture.BufferedTextures;
 
+import java.awt.image.BufferedImage;
 import java.util.function.Function;
 
 import static net.modificationstation.stationapi.api.StationAPI.MODID;
@@ -22,6 +24,15 @@ public class ExpandableAtlas extends Atlas {
 
     public Sprite addTexture(Identifier identifier) {
         return addTexture(identifier, true);
+    }
+    
+    public Sprite addTexture(Identifier id, BufferedImage image) {
+        int texID = idToTex.containsKey(id) ? idToTex.get(id).index : size++;
+        Sprite sprite = new Sprite(id, texID);
+        BufferedTextures.addTexture(id, image, sprite);
+        idToTex.put(id, sprite);
+        textures.put(texID, sprite);
+        return sprite;
     }
 
     private Sprite addTexture(Identifier identifier, boolean incrementSize) {

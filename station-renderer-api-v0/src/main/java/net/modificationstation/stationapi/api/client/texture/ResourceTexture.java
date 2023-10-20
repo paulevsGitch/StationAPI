@@ -6,6 +6,7 @@ import net.modificationstation.stationapi.api.client.resource.metadata.TextureRe
 import net.modificationstation.stationapi.api.registry.Identifier;
 import net.modificationstation.stationapi.api.resource.Resource;
 import net.modificationstation.stationapi.api.resource.ResourceManager;
+import net.modificationstation.stationapi.impl.client.texture.BufferedTextures;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -75,9 +76,14 @@ public class ResourceTexture extends AbstractTexture {
           try {
               NativeImage nativeImage;
               Resource resource = resourceManager.getResourceOrThrow(identifier);
-              try (InputStream inputStream = resource.getInputStream()){
-                  nativeImage = NativeImage.read(inputStream);
+    
+              nativeImage = BufferedTextures.getTexture(identifier);
+              if (nativeImage == null) {
+                  try (InputStream inputStream = resource.getInputStream()) {
+                      nativeImage = NativeImage.read(inputStream);
+                  }
               }
+              
               TextureResourceMetadata textureResourceMetadata = null;
               try {
                   textureResourceMetadata = resource.getMetadata().decode(TextureResourceMetadata.READER).orElse(null);

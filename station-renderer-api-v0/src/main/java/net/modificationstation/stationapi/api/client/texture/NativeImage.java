@@ -69,8 +69,8 @@ implements AutoCloseable {
         buffer = class_214.method_744((int) sizeBytes);
 
     }
-
-    private NativeImage(Format format, int width, int height, boolean useStb, ByteBuffer buffer) {
+    
+    public NativeImage(Format format, int width, int height, boolean useStb, ByteBuffer buffer) {
         this.format = format;
         this.width = width;
         this.height = height;
